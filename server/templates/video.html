@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="video-page-container" style="max-width: 1000px; margin: 0 auto; padding: 20px;">
+
+    <a href="{{ url_for('dashboard') }}" style="color: #888; text-decoration: none; display: flex; align-items: center; gap: 8px; margin-bottom: 20px; font-size: 0.9em;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        {{ 'العودة للوحة التحكم' if lang == 'ar' else 'Back to Dashboard' }}
+    </a>
+
+    <div class="video-main-card" style="background: #120B1A; border-radius: 20px; border: 1px solid #1F315C; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+
+        <div style="position: relative; padding-bottom: 56.25%; height: 0; background: #000;">
+            <iframe
+                src="{{ video.url }}"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
+                allowfullscreen>
+            </iframe>
+        </div>
+
+        <div style="padding: 30px;">
+            <h1 style="color: #fff; margin: 0 0 10px 0; font-size: 1.8em;">{{ video.title }}</h1>
+
+            <div style="display: flex; align-items: center; gap: 10px; color: #888; margin-bottom: 25px;">
+                <div style="width: 32px; height: 32px; background: #1F315C; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                </div>
+                {# BUG FIX #4: كان يعرض "Teacher ID: X" بدل اسم المعلم #}
+                <span style="font-size: 0.95em; color: #6d5d8e;">{{ video.teacher_name }}</span>
+                <span style="margin-left: 8px; background: rgba(31,49,92,0.4); color: #aaa; padding: 2px 10px; border-radius: 8px; font-size: 0.78em;">{{ video.category }}</span>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #222; margin-bottom: 25px;">
+
+            <h3 style="color: #fff; font-size: 1.1em; margin-bottom: 12px;">{{ 'الوصف:' if lang == 'ar' else 'Description:' }}</h3>
+            <p style="color: #aaa; line-height: 1.6; font-size: 0.95em; white-space: pre-wrap;">{{ video.description }}</p>
+
+            {# BUG FIX #2: كان user.is_admin يُعطي خطأ لأن الخاصية غير موجودة في الـ Model #}
+            {# الآن is_admin هو property حقيقي في كلاس User #}
+            {% if user and (user.id == video.teacher_id or user.is_admin) %}
+            <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #222; text-align: center;">
+                <form action="{{ url_for('delete_video', video_id=video.id) }}" method="POST"
+                      onsubmit="return confirm((lang==='ar' ? 'هل أنت متأكد من حذف هذا الفيديو؟' : 'Are you sure you want to delete this video?'));">
+                    <button type="submit" style="background: rgba(220, 38, 38, 0.1); color: #ef4444; border: 1px solid #ef4444; padding: 10px 25px; border-radius: 10px; cursor: pointer; font-weight: 600; transition: 0.3s;">
+                        {{ '🗑 حذف الفيديو' if lang == 'ar' else '🗑 Delete Video' }}
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    body { background-color: #08050a; }
+    const lang = document.documentElement.lang || 'en';
+    .video-main-card:hover {
+        border-color: #1F315C;
+        box-shadow: 0 0 20px rgba(31, 49, 92, 0.2);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="{{ session.get('lang', 'en') }}" dir="{{ 'rtl' if session.get('lang', 'en') == 'ar' else 'ltr' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}StarLearn{% endblock %}</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+
+        {% if user %}
+        <aside class="sidebar">
+            <div class="sidebar-header" style="padding: 30px 20px; text-align: center;">
+                <div class="logo" style="font-size: 1.6em; font-weight: bold; letter-spacing: 1px;">
+                    <span class="star" style="color: #3182ce;">★</span> StarLearn
+                </div>
+            </div>
+
+            <nav class="sidebar-menu">
+                <a href="{{ url_for('dashboard') }}" class="sidebar-item {% if request.path == url_for('dashboard') %}active{% endif %}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    <span>{{ 'لوحة التحكم' if lang == 'ar' else 'Dashboard' }}</span>
+                </a>
+
+                <a href="{{ url_for('chat') }}" class="sidebar-item {% if request.path == url_for('chat') %}active{% endif %}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    <span>{{ 'نشمي AI' if lang == 'ar' else 'Nashmi AI' }}</span>
+                </a>
+
+                <a href="{{ url_for('profile') }}" class="sidebar-item {% if request.path == url_for('profile') %}active{% endif %}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <span>{{ 'الملف الشخصي' if lang == 'ar' else 'Profile' }}</span>
+                </a>
+
+                {% if user.role == 'teacher' %}
+                <a href="{{ url_for('upload') }}" class="sidebar-item {% if request.path == url_for('upload') %}active{% endif %}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                    <span>{{ 'رفع محتوى' if lang == 'ar' else 'Upload Content' }}</span>
+                </a>
+                {% endif %}
+
+                <div style="flex-grow: 1;"></div>
+
+                <!-- زر تبديل اللغة — رابط مباشر بدون url_for -->
+                <a href="/set-lang/{{ 'en' if lang == 'ar' else 'ar' }}"
+                   class="sidebar-item"
+                   style="color: #60a5fa; background: rgba(30,80,180,0.2); border: 1px solid rgba(59,130,246,0.45); border-radius: 10px; margin-bottom: 8px; font-weight: 600; font-size: 0.95em;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    <span>{{ 'English' if lang == 'ar' else 'عربي' }}</span>
+                </a>
+
+                <a href="{{ url_for('logout') }}" class="sidebar-item logout-item" style="color: #e53e3e; border-top: 1px solid #1a2233; padding-top: 20px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    <span>{{ 'تسجيل الخروج' if lang == 'ar' else 'Logout' }}</span>
+                </a>
+            </nav>
+        </aside>
+        {% endif %}
+
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    {% if user and request.path != url_for('chat') %}
+    <div id="chat-widget-container">
+        <button id="chat-trigger" class="chat-fab" title="اسأل نشمي">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="chat-icon-open"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="chat-icon-close" style="display:none;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+
+        <div id="chat-window" class="chat-window hidden">
+            <div class="chat-window-header">
+                <div class="header-info">
+                    <div class="nashmi-avatar-small">★</div>
+                    <div>
+                        <div class="header-name">Nashmi AI</div>
+                        <div class="header-status">Study Assistant</div>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-window-body" id="widgetMessages">
+                <div class="chat-msg assistant">
+                    <div class="msg-bubble">
+                        {% if lang == 'ar' %}مرحباً {{ user.full_name.split()[0] if user.full_name else 'صديقي' }}! أنا نشمي، مساعدك الذكي. كيف يمكنني مساعدتك اليوم؟{% else %}Hello {{ user.full_name.split()[0] if user.full_name else 'there' }}! I'm Nashmi, your AI assistant. How can I help you today?{% endif %}
+                    </div>
+                </div>
+            </div>
+            <form class="chat-window-input" id="widgetForm" onsubmit="sendWidgetMessage(event)">
+                <input type="text" id="widgetInput" placeholder="{% if lang == 'ar' %}اسأل نشمي أي شيء...{% else %}Ask Nashmi anything...{% endif %}" autocomplete="off">
+                <button type="submit">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <script>
+        const chatTrigger = document.getElementById('chat-trigger');
+        if (chatTrigger) {
+            const chatWindow = document.getElementById('chat-window');
+            const iconOpen = document.getElementById('chat-icon-open');
+            const iconClose = document.getElementById('chat-icon-close');
+
+            chatTrigger.addEventListener('click', () => {
+                const isHidden = chatWindow.classList.toggle('hidden');
+                iconOpen.style.display = isHidden ? 'block' : 'none';
+                iconClose.style.display = isHidden ? 'none' : 'block';
+            });
+        }
+
+        async function sendWidgetMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('widgetInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            input.value = '';
+            const messagesContainer = document.getElementById('widgetMessages');
+
+            messagesContainer.innerHTML += `
+                <div class="chat-msg user">
+                    <div class="msg-bubble user-bubble">${escapeHtml(msg)}</div>
+                </div>`;
+
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'chat-msg assistant';
+            typingDiv.innerHTML = `<div class="msg-bubble">جاري التفكير...</div>`;
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg })
+                });
+                const data = await response.json();
+                typingDiv.querySelector('.msg-bubble').innerText = data.reply || "عذراً، حدث خطأ.";
+            } catch (error) {
+                typingDiv.querySelector('.msg-bubble').innerText = "خطأ في الاتصال بالخادم.";
+            }
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        function escapeHtml(text) {
+            return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register — StarLearn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="auth-body">
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <span class="logo-star">★</span>
+        <span class="logo-text">StarLearn</span>
+      </div>
+      <h1 class="auth-title">{% if session.get('lang','en') == 'ar' %}إنشاء حساب{% else %}Create your account{% endif %}</h1>
+      <p class="auth-subtitle">{% if session.get('lang','en') == 'ar' %}انضم لمجتمع StarLearn اليوم{% else %}Join the StarLearn community today{% endif %}</p>
+
+      {% if error %}
+      <div class="alert alert-error">{{ error }}</div>
+      {% endif %}
+
+      <form method="post" action="/register" class="auth-form">
+        <div class="form-group">
+          <label for="full_name">{% if session.get('lang','en') == 'ar' %}الاسم الكامل{% else %}Full Name{% endif %}</label>
+          <input type="text" id="full_name" name="full_name" placeholder="{% if session.get('lang','en') == 'ar' %}اسمك الكامل{% else %}Your full name{% endif %}" required data-testid="input-fullname" />
+        </div>
+        <div class="form-group">
+          <label for="username">{% if session.get('lang','en') == 'ar' %}اسم المستخدم{% else %}Username{% endif %}</label>
+          <input type="text" id="username" name="username" placeholder="{% if session.get('lang','en') == 'ar' %}اختر اسم مستخدم{% else %}Choose a username{% endif %}" required autocomplete="username" data-testid="input-username" />
+        </div>
+        <div class="form-group">
+          <label for="password">{% if session.get('lang','en') == 'ar' %}كلمة المرور{% else %}Password{% endif %}</label>
+          <input type="password" id="password" name="password" placeholder="{% if session.get('lang','en') == 'ar' %}اختر كلمة مرور{% else %}Choose a password{% endif %}" required autocomplete="new-password" data-testid="input-password" />
+        </div>
+        <div class="form-group">
+          <label>{% if session.get('lang','en') == 'ar' %}أنا…{% else %}I am a…{% endif %}</label>
+          <div class="role-picker">
+            <label class="role-option">
+              <input type="radio" name="role" value="student" checked data-testid="radio-student" />
+              <span class="role-card">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                Student
+              </span>
+            </label>
+            <label class="role-option">
+              <input type="radio" name="role" value="teacher" data-testid="radio-teacher" />
+              <span class="role-card">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                Teacher
+              </span>
+            </label>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full" data-testid="button-register">{% if session.get('lang','en') == 'ar' %}إنشاء الحساب{% else %}Create Account{% endif %}</button>
+      </form>
+
+      <p class="auth-switch">{% if session.get('lang','en') == 'ar' %}لديك حساب بالفعل؟{% else %}Already have an account?{% endif %} <a href="/login">{% if session.get('lang','en') == 'ar' %}تسجيل الدخول{% else %}Sign in{% endif %}</a></p>
+    </div>
+  </div>
+</body>
+</html>

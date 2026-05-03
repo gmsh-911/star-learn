@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="upload-container" style="display: flex; justify-content: center; align-items: center; min-height: 80vh; padding: 20px;">
+    
+    <div class="upload-card" style="background: #120B1A; border: 1px solid #1F315C; border-radius: 20px; padding: 40px; width: 100%; max-width: 600px; box-shadow: 0 15px 35px rgba(0,0,0,0.6);">
+        
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 style="color: #fff; font-size: 2em; margin-bottom: 10px;">{{ 'رفع درس جديد' if lang == 'ar' else 'Upload New Lesson' }}</h2>
+            <p style="color: #6d5d8e; font-size: 0.9em;">Fill in the details below to share a new video with your students.</p>
+        </div>
+
+        <form action="{{ url_for('upload') }}" method="POST">
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="color: #888; display: block; margin-bottom: 8px; font-size: 0.9em;">{{ 'عنوان الدرس' if lang == 'ar' else 'Lesson Title' }}</label>
+                <input type="text" name="title" placeholder="e.g. Introduction to Quantum Physics" required
+                       style="width: 100%; background: #09050D; border: 1px solid #1F315C; border-radius: 10px; padding: 12px 15px; color: #fff; outline: none; transition: 0.3s;">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="color: #888; display: block; margin-bottom: 8px; font-size: 0.9em;">{{ 'رابط فيديو يوتيوب' if lang == 'ar' else 'YouTube Video Link' }}</label>
+                <input type="url" name="url" placeholder="https://www.youtube.com/watch?v=..." required
+                       style="width: 100%; background: #09050D; border: 1px solid #1F315C; border-radius: 10px; padding: 12px 15px; color: #fff; outline: none; transition: 0.3s;">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="color: #888; display: block; margin-bottom: 8px; font-size: 0.9em;">{{ 'المادة / الفئة' if lang == 'ar' else 'Subject / Category' }}</label>
+                <select name="category" required
+                        style="width: 100%; background: #09050D; border: 1px solid #1F315C; border-radius: 10px; padding: 12px 15px; color: #fff; outline: none; cursor: pointer;">
+                    <option value="" disabled selected>{{ 'اختر مادة' if lang == 'ar' else 'Select a subject' }}</option>
+                    <option value="Mathematics">Mathematics</option>
+                    <option value="Physics">Physics</option>
+                    <option value="Chemistry">Chemistry</option>
+                    <option value="Programming">Programming</option>
+                    <option value="English">English</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 30px;">
+                <label style="color: #888; display: block; margin-bottom: 8px; font-size: 0.9em;">{{ 'الوصف' if lang == 'ar' else 'Description' }}</label>
+                <textarea name="description" rows="4" placeholder="{{ 'اشرح باختصار ما يغطيه هذا الدرس...' if lang == 'ar' else 'Briefly explain what this lesson covers...' }}" required
+                          style="width: 100%; background: #09050D; border: 1px solid #1F315C; border-radius: 10px; padding: 12px 15px; color: #fff; outline: none; transition: 0.3s; resize: none;"></textarea>
+            </div>
+
+            <button type="submit" class="publish-btn">
+                {{ 'نشر الدرس' if lang == 'ar' else 'Publish Lesson' }}
+            </button>
+        </form>
+    </div>
+</div>
+
+<style>
+    /* تأثيرات الحقول عند التركيز */
+    input:focus, textarea:focus, select:focus {
+        border-color: #3b5bdb !important;
+        box-shadow: 0 0 10px rgba(31, 49, 92, 0.3);
+    }
+
+    /* ستايل زر النشر */
+    .publish-btn {
+        width: 100%;
+        background: #1F315C;
+        color: #fff;
+        border: none;
+        padding: 15px;
+        border-radius: 12px;
+        font-size: 1.1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .publish-btn:hover {
+        background: #2a4485;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(31, 49, 92, 0.4);
+    }
+
+    .publish-btn:active {
+        transform: translateY(0);
+    }
+</style>
+{% endblock %}

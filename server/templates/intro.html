@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to StarLearn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="intro-body">
+  <div class="intro-container">
+    
+    <div class="intro-star-lg">★</div>
+    
+    <h1 class="intro-title">{% if session.get('lang','en') == 'ar' %}رحلتك نحو <br><span>المعرفة المتميزة</span> تبدأ هنا{% else %}Your Journey to <br><span>Stellar Knowledge</span> Starts Here{% endif %}</h1>
+    
+    <p class="intro-subtitle">
+      {% if session.get('lang','en') == 'ar' %}مرحباً بك في StarLearn، منصة التعليم من الجيل القادم التي تجمع بين دورات الفيديو ومساعد الذكاء الاصطناعي.{% else %}Welcome to StarLearn, the next-generation educational platform combining expert video courses with intelligent AI assistance.{% endif %}
+    </p>
+
+    <div class="intro-actions">
+      <a href="/login" class="btn btn-primary">
+        {% if session.get('lang','en') == 'ar' %}تسجيل الدخول{% else %}Sign In to Continue{% endif %}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+      </a>
+      <a href="/register" class="btn btn-secondary">{% if session.get('lang','en') == 'ar' %}إنشاء حساب جديد{% else %}Create New Account{% endif %}</a>
+    </div>
+
+    <div class="intro-features">
+      <div class="feature-item">
+        <div class="feature-icon">★</div>
+        <h3>{% if session.get('lang','en') == 'ar' %}نشمي AI{% else %}Nashmi AI{% endif %}</h3>
+        <p>{% if session.get('lang','en') == 'ar' %}احصل على إجابات فورية لأسئلتك الدراسية من مساعدنا الذكي.{% else %}Get instant answers to your study questions from our smart educational assistant.{% endif %}</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:22px;height:22px"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        </div>
+        <h3>{% if session.get('lang','en') == 'ar' %}فيديوهات متخصصة{% else %}Expert Videos{% endif %}</h3>
+        <p>{% if session.get('lang','en') == 'ar' %}تعلم من محتوى فيديو عالي الجودة يختاره أفضل المعلمين.{% else %}Learn from high-quality video content curated by top teachers in various fields.{% endif %}</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:22px;height:22px"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        </div>
+        <h3>{% if session.get('lang','en') == 'ar' %}تعلم منظم{% else %}Structured Learning{% endif %}</h3>
+        <p>{% if session.get('lang','en') == 'ar' %}تتبع تقدمك وصل للمحتوى بسلاسة على أي جهاز.{% else %}Track your progress and access course materials seamlessly on any device.{% endif %}</p>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

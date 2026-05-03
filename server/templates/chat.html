@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Nashmi AI — StarLearn{% endblock %}
+
+{% block content %}
+<div class="chat-layout">
+  <div class="chat-header">
+    <div class="nashmi-avatar">
+      <svg viewBox="0 0 24 24" fill="currentColor" style="width: 24px; height: 24px;">
+          <path d="M12 2L14.81 8.62L22 9.24L16.54 13.97L18.18 21L12 17.27L5.82 21L7.46 13.97L2 9.24L9.19 8.62L12 2Z" />
+      </svg>
+    </div>
+    <div>
+      <h1 class="page-title" style="margin:0">{{ 'نشمي AI' if lang == 'ar' else 'Nashmi AI' }}</h1>
+      <p class="page-subtitle" style="margin:0">{{ 'مساعدك التعليمي الشخصي' if lang == 'ar' else 'Your personal educational assistant' }}</p>
+    </div>
+    
+    {# تعديل حالة الـ Online/Offline لتكون تلقائية #}
+    {% if ai_available %}
+    <span class="badge-online" style="background: rgba(16, 185, 129, 0.2); color: #10b981; padding: 4px 12px; border-radius: 99px; font-size: 0.8rem;">Online</span>
+    {% else %}
+    <span class="badge-offline" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; padding: 4px 12px; border-radius: 99px; font-size: 0.8rem;">Offline</span>
+    {% endif %}
+  </div>
+
+  <div class="chat-messages" id="chatMessages">
+    <div class="chat-msg assistant">
+      <div class="msg-avatar">
+        <svg viewBox="0 0 24 24" fill="currentColor" style="width: 20px; height: 20px;"><path d="M12 2L14.81 8.62L22 9.24L16.54 13.97L18.18 21L12 17.27L5.82 21L7.46 13.97L2 9.24L9.19 8.62L12 2Z" /></svg>
+      </div>
+      <div class="msg-bubble">
+        {% if lang == 'ar' %}مرحباً {{ user.full_name.split()[0] }}! أنا نشمي، مساعدك التعليمي الذكي على StarLearn. اسألني أي شيء. 🌟{% else %}Hello, {{ user.full_name.split()[0] }}! I'm Nashmi, your educational AI assistant on StarLearn. Ask me anything. 🌟{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <form class="chat-input-bar" id="chatForm" onsubmit="sendMessage(event)">
+    <input
+      type="text"
+      id="chatInput"
+      placeholder="{% if lang == 'ar' %}اسأل نشمي أي شيء...{% else %}Ask Nashmi anything…{% endif %}"
+      autocomplete="off"
+      {% if not ai_available %}disabled{% endif %}
+    />
+    <button type="submit" id="sendBtn" {% if not ai_available %}disabled{% endif %}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </form>
+</div>
+
+<script>
+const lang = document.documentElement.lang || 'en';
+const messages = document.getElementById('chatMessages');
+const input = document.getElementById('chatInput');
+const sendBtn = document.getElementById('sendBtn');
+
+function addMessage(text, role) {
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + role;
+  if (role === 'assistant') {
+    // استخدام الأيقونة الجديدة في رسائل نشمي
+    div.innerHTML = `
+      <div class="msg-avatar">
+        <svg viewBox="0 0 24 24" fill="currentColor" style="width: 20px; height: 20px;"><path d="M12 2L14.81 8.62L22 9.24L16.54 13.97L18.18 21L12 17.27L5.82 21L7.46 13.97L2 9.24L9.19 8.62L12 2Z" /></svg>
+      </div>
+      <div class="msg-bubble">${escapeHtml(text)}</div>`;
+  } else {
+    div.innerHTML = `<div class="msg-bubble user-bubble">${escapeHtml(text)}</div>`;
+  }
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+  return div;
+}
+
+function escapeHtml(text) {
+  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+async function sendMessage(e) {
+  e.preventDefault();
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  input.value = '';
+  input.disabled = true; // قفل الإدخال أثناء التفكير
+  sendBtn.disabled = true;
+  addMessage(msg, 'user');
+
+  const typing = addMessage(lang === 'ar' ? 'جاري التفكير...' : 'Thinking...', 'assistant');
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: msg }),
+    });
+    
+    const data = await res.json();
+    
+    // التصحيح المهم: استخدام data.reply بدلاً من data.response
+    const finalMsg = data.reply || data.error || lang === 'ar' ? 'عذراً، لم أتمكن من الرد.' : 'Sorry, I could not respond.';
+    typing.querySelector('.msg-bubble').innerHTML = escapeHtml(finalMsg);
+    
+  } catch (err) {
+    typing.querySelector('.msg-bubble').textContent = lang === 'ar' ? 'خطأ في الشبكة. تحقق من اتصالك.' : 'Network error. Please check your connection.';
+  } finally {
+    input.disabled = false; // فك القفل
+    sendBtn.disabled = false;
+    input.focus();
+    messages.scrollTop = messages.scrollHeight;
+  }
+}
+</script>
+{% endblock %}
