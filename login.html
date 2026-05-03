@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — StarLearn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="auth-body">
+  <div class="auth-container">
+    <div class="auth-card">
+
+      <div class="auth-logo">
+        <span class="logo-star">★</span>
+        <span class="logo-text">StarLearn</span>
+      </div>
+
+      <h1 class="auth-title">{% if session.get('lang','en') == 'ar' %}أهلاً بعودتك{% else %}Welcome Back{% endif %}</h1>
+      <p class="auth-subtitle">{% if session.get('lang','en') == 'ar' %}سجّل دخولك للمتابعة.{% else %}Log in to continue to your dashboard.{% endif %}</p>
+
+      {% if error %}
+      <div class="alert alert-error">{{ error }}</div>
+      {% endif %}
+
+      <form method="post" action="/login" class="auth-form">
+        <div class="form-group">
+          <label for="username">{% if session.get('lang','en') == 'ar' %}اسم المستخدم{% else %}Username{% endif %}</label>
+          <input type="text" id="username" name="username"
+                 placeholder="{% if session.get('lang','en') == 'ar' %}أدخل اسم المستخدم{% else %}Enter your username{% endif %}" required autocomplete="username" />
+        </div>
+
+        <div class="form-group">
+          <label for="password">{% if session.get('lang','en') == 'ar' %}كلمة المرور{% else %}Password{% endif %}</label>
+          <input type="password" id="password" name="password"
+                 placeholder="{% if session.get('lang','en') == 'ar' %}أدخل كلمة المرور{% else %}Enter your password{% endif %}" required autocomplete="current-password" />
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full">{% if session.get('lang','en') == 'ar' %}تسجيل الدخول{% else %}Login{% endif %}</button>
+      </form>
+
+      <p class="auth-switch">{% if session.get('lang','en') == 'ar' %}ليس لديك حساب؟{% else %}Don't have an account?{% endif %} <a href="/register">{% if session.get('lang','en') == 'ar' %}إنشاء حساب{% else %}Sign up{% endif %}</a></p>
+
+      <a href="/" class="back-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             style="width:14px;height:14px;">
+          <line x1="19" y1="12" x2="5" y2="12"/>
+          <polyline points="12 19 5 12 12 5"/>
+        </svg>
+        {% if session.get('lang','en') == 'ar' %}العودة للرئيسية{% else %}Back to home{% endif %}
+      </a>
+
+    </div>
+  </div>
+</body>
+</html>
